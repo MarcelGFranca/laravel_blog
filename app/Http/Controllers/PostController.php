@@ -23,6 +23,21 @@ class PostController extends Controller
 		$body = $request->body;
 		$images = $request->images;
 
-		$post = Post::
+		$post = Post::create([
+			'title' => $title,
+			'body' => $body,
+			'user_id' => $user->id,
+		]);
+
+		// store each image
+		foreach ($images as $image) {
+			$imagePath = Storage::disk('uploads')->put($user->email . '/posts', $image);
+			PostImage::create([
+				'post_image_caption' => $title,
+				'post_iamge_path' => '/uploads/' . $imagePath,
+				'post_id' => $post->id
+			]);
+		}
+		return response()->json(['error' => false, 'data' => $post]);
 	}
 }
